@@ -3,7 +3,7 @@ module ProgressJob
 
     respond_to :json
 
-    def progress
+    def show
       @current_job = Delayed::Job.find(params[:job_id])
       percentage = current_job.current_progress / current_job.max_progress.to_f * 100
       @current_job[:percentage] = percentage
