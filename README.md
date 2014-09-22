@@ -1,8 +1,10 @@
 # ProgressJob
 
-TODO: Write a gem description
+This gem add a couple of colums to delayed job table, and gives u a basic class for working with progress
 
 ## Installation
+
+You need to have https://github.com/collectiveidea/delayed_job in you gem file
 
 Add this line to your application's Gemfile:
 
@@ -12,13 +14,34 @@ And then execute:
 
     $ bundle
 
-Or install it yourself as:
+Run generator (run delayed job generators first!)
 
-    $ gem install progress_job
+    $ rake progress_job:install
 
 ## Usage
 
-TODO: Write usage instructions here
+Create a new class that extends ProgressJob::Base
+
+    class NewJob < ProgressJob::Base
+
+      def perform
+        10.times do |i|
+          sleep(1.seconds)
+          update_progress(step: 10)
+        end
+      end
+
+    end
+
+Inside perform method you can use 'update_progress(step)' method to update the job progress.
+
+To create a new job use Delayed job enqueue method, and pass the progress_max value
+
+    job = Delayed::Job.enqueue NewJob.new(100)
+
+There is also a controller which returns the delayed job with calculated percentage
+
+    GET 'progress-jobs/:job_id/'
 
 ## Contributing
 
