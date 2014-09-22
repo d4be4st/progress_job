@@ -1,0 +1,9 @@
+Description:
+    Generates migration for acts_as_simple_translatable.
+
+Example:
+    rails generate acts_as_simple_translatable en category name description
+
+    This will create a migration to translate the name and description fields in the categories table.
+    It will insert the existing category and description values in the record_translations table using the 'en' (English) locale.
+    Note: You cannot roll back this migration.
