@@ -43,6 +43,33 @@ There is also a controller which returns the delayed job with calculated percent
 
     GET 'progress-jobs/:job_id/'
 
+## Ajax usage
+
+Example of ajax calls:
+
+    $('.button').click(function(){
+
+      var interval;
+      $.ajax({
+        url: '/start',
+        success: function(job){
+          interval = setInterval(function(){
+            $.ajax({
+              url: '/progress-jobs/' + job.id,
+              success: function(job){
+                $('.progress-bar').css('width', job.progress + '%').text(job.progress + '%')
+              },
+              error: function(){
+                $('.progress-bar').css('width', '100%').text('100%')
+                clearInterval(interval);
+              }
+            })
+          },1000)
+        }
+      });
+    });
+
+
 ## Contributing
 
 1. Fork it ( http://github.com/<my-github-username>/progress_job/fork )
