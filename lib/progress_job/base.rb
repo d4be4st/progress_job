@@ -1,8 +1,8 @@
 module ProgressJob
   class Base
+
     def initialize(progress_max)
       @progress_max = progress_max
-      super()
     end
 
     def before(job)
@@ -12,6 +12,16 @@ module ProgressJob
 
     def update_progress(step: 1)
       @job.update_column(:progress_current, @job.progress_current + step)
+    end
+
+    def update_stage(stage)
+      @job.update_column(:progress_stage, stage)
+    end
+
+    def update_stage_progress(stage, step: 1)
+      binding.pry
+      update_stage(stage)
+      update_progress(step: step)
     end
   end
 end
