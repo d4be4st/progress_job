@@ -2,6 +2,8 @@
 
 This gem add a couple of colums to delayed job table, and gives u a basic class for working with progress
 
+![progress_job](https://s3.amazonaws.com/infinum.web.production/repository_items/files/000/000/435/original/progress_job.gif?1414140810)
+
 ## Installation
 
 You need to have https://github.com/collectiveidea/delayed_job in you gem file
