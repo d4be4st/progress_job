@@ -25,15 +25,19 @@ Create a new class that extends ProgressJob::Base
     class NewJob < ProgressJob::Base
 
       def perform
-        10.times do |i|
-          sleep(1.seconds)
-          update_progress(step: 10)
-        end
+        # some actions
       end
 
     end
 
-Inside perform method you can use 'update_progress(step)' method to update the job progress.
+Inside perform method you can use:
+
+    update_progress(step: 10)
+    update_stage('name of stage')
+    update_stage_progress('name of stage', step: 11)
+
+methods to update the job progress.
+
 
 To create a new job use Delayed job enqueue method, and pass the progress_max value
 
@@ -43,32 +47,112 @@ There is also a controller which returns the delayed job with calculated percent
 
     GET 'progress-jobs/:job_id/'
 
-## Ajax usage
+## Examples
 
-Example of ajax calls:
+### Progress job class
 
-    $('.button').click(function(){
+    class NewJob < ProgressJob::Base
 
-      var interval;
+      def perform
+        handler = Handler.new
+
+        update_stage('Handling ports')
+        handler.handle_ports
+
+        update_stage_progress('Handling cruise', step: 10)
+        handler.handle_cruise
+
+        update_stage_progress('Handling days', step: 10)
+        handler.handle_days
+
+        update_stage_progress('Handling pick up times', step: 10)
+        handler.handle_pick_up_times
+
+        update_stage_progress('Handling users', step: 10)
+        handler.handle_users
+
+        update_stage_progress('Handling item categories', step: 10)
+        handler.handle_item_categories
+
+        update_stage_progress('Handling items', step: 10)
+        handler.handle_items
+        handler.handle_other_items
+
+        update_stage_progress('Handling event types', step: 10)
+        handler.handle_event_types
+
+        update_stage_progress('Handling events', step: 10)
+        handler.handle_events
+      end
+
+    end
+
+### HAML 
+
+    = simple_form_for :import, url: [:import], remote: true do |f|
+      .row
+        .col-xs-10
+          = f.input :file, as: :file
+        .col-xs-2
+          = f.button :submit, "Import", class: "btn btn-success"
+
+      %br
+      .well{style: "display:none"}
+        .row
+          .col-xs-12
+            .progress-status.text-primary
+        .row
+          .col-xs-12
+            .progress.progress-striped.active
+              .progress-bar
+                .text-primary
+                  0%
+
+### Ajax usage
+
+Example of ajax call (this is a .html.haml remote: true response):
+
+    var interval;
+    $('.hermes-import .well').show();
+    interval = setInterval(function(){
       $.ajax({
-        url: '/start',
+        url: '/progress-job/' + #{@job.id},
         success: function(job){
-          interval = setInterval(function(){
-            $.ajax({
-              url: '/progress-jobs/' + job.id,
-              success: function(job){
-                $('.progress-bar').css('width', job.progress + '%').text(job.progress + '%')
-              },
-              error: function(){
-                $('.progress-bar').css('width', '100%').text('100%')
-                clearInterval(interval);
-              }
-            })
-          },1000)
-        }
-      });
-    });
+          var stage, progress;
 
+          // If there are errors
+          if (job.last_error != null) {
+            $('.progress-status').addClass('text-danger').text(job.progress_stage);
+            $('.progress-bar').addClass('progress-bar-danger');
+            $('.progress').removeClass('active');
+            clearInterval(interval);
+          }
+
+          // Upload stage
+          if (job.progress_stage != null){
+            stage = job.progress_stage;
+            progress = job.progress_current / job.progress_max * 100;
+          } else {
+            progress = 0;
+            stage = 'Uploading file';
+          }
+
+          // In job stage
+          if (progress !== 0){
+            $('.progress-bar').css('width', progress + '%').text(progress + '%');
+          }
+
+          $('.progress-status').text(stage);
+        },
+        error: function(){
+          // Job is no loger in database which means it finished successfuly
+          $('.progress').removeClass('active');
+          $('.progress-bar').css('width', '100%').text('100%');
+          $('.progress-status').text('Successfully imported!');
+          clearInterval(interval);
+        }
+      })
+    },100);
 
 ## Contributing
 
