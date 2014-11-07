@@ -18,7 +18,7 @@ And then execute:
 
 Run generator (run delayed job generators first!)
 
-    $ rake progress_job:install
+    $ rails generate progress_job:install
 
 ## Usage
 
@@ -34,16 +34,17 @@ Create a new class that extends ProgressJob::Base
 
 Inside perform method you can use:
 
-    update_progress(step: 10)
+    update_progress(step: 10) # default step is 1
     update_stage('name of stage')
     update_stage_progress('name of stage', step: 11)
+    update_progress_max(progress_max)
 
 methods to update the job progress.
 
 
 To create a new job use Delayed job enqueue method, and pass the progress_max value
 
-    job = Delayed::Job.enqueue NewJob.new(100)
+    job = Delayed::Job.enqueue NewJob.new(progress_max: 100) # default progress_max is 100
 
 There is also a controller which returns the delayed job with calculated percentage
 
