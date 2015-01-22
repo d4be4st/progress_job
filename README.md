@@ -2,7 +2,7 @@
 
 This gem add a couple of colums to delayed job table, and gives u a basic class for working with progress
 
-![progress_job](https://s3.amazonaws.com/infinum.web.production/repository_items/files/000/000/435/original/progress_job.gif?1414140810)
+![progress_job](https://s3-eu-west-1.amazonaws.com/uploads-eu.hipchat.com/36110/270039/V6ljuGiWx70t2AF/progress%20%281%29.gif)
 
 ## Installation
 
@@ -51,6 +51,11 @@ There is also a controller which returns the delayed job with calculated percent
     GET 'progress-jobs/:job_id/'
 
 ## Examples
+
+### Demo
+
+[demo](http://progress-job-demo.hadjic.com)
+[source](https://github.com/d4be4st/progress_job_demo)
 
 ### Progress job class
 
