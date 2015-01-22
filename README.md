@@ -54,108 +54,114 @@ There is also a controller which returns the delayed job with calculated percent
 
 ### Progress job class
 
-    class NewJob < ProgressJob::Base
+    ``` ruby
+      class NewJob < ProgressJob::Base
 
-      def perform
-        handler = Handler.new
+        def perform
+          handler = Handler.new
 
-        update_stage('Handling ports')
-        handler.handle_ports
+          update_stage('Handling ports')
+          handler.handle_ports
 
-        update_stage_progress('Handling cruise', step: 10)
-        handler.handle_cruise
+          update_stage_progress('Handling cruise', step: 10)
+          handler.handle_cruise
 
-        update_stage_progress('Handling days', step: 10)
-        handler.handle_days
+          update_stage_progress('Handling days', step: 10)
+          handler.handle_days
 
-        update_stage_progress('Handling pick up times', step: 10)
-        handler.handle_pick_up_times
+          update_stage_progress('Handling pick up times', step: 10)
+          handler.handle_pick_up_times
 
-        update_stage_progress('Handling users', step: 10)
-        handler.handle_users
+          update_stage_progress('Handling users', step: 10)
+          handler.handle_users
 
-        update_stage_progress('Handling item categories', step: 10)
-        handler.handle_item_categories
+          update_stage_progress('Handling item categories', step: 10)
+          handler.handle_item_categories
 
-        update_stage_progress('Handling items', step: 10)
-        handler.handle_items
-        handler.handle_other_items
+          update_stage_progress('Handling items', step: 10)
+          handler.handle_items
+          handler.handle_other_items
 
-        update_stage_progress('Handling event types', step: 10)
-        handler.handle_event_types
+          update_stage_progress('Handling event types', step: 10)
+          handler.handle_event_types
 
-        update_stage_progress('Handling events', step: 10)
-        handler.handle_events
+          update_stage_progress('Handling events', step: 10)
+          handler.handle_events
+        end
+
       end
-
-    end
+    ```
 
 ### HAML 
 
-    = simple_form_for :import, url: [:import], remote: true do |f|
-      .row
-        .col-xs-10
-          = f.input :file, as: :file
-        .col-xs-2
-          = f.button :submit, "Import", class: "btn btn-success"
-
-      %br
-      .well{style: "display:none"}
+    ``` ruby
+      = simple_form_for :import, url: [:import], remote: true do |f|
         .row
-          .col-xs-12
-            .progress-status.text-primary
-        .row
-          .col-xs-12
-            .progress.progress-striped.active
-              .progress-bar
-                .text-primary
-                  0%
+          .col-xs-10
+            = f.input :file, as: :file
+          .col-xs-2
+            = f.button :submit, "Import", class: "btn btn-success"
 
+        %br
+        .well{style: "display:none"}
+          .row
+            .col-xs-12
+              .progress-status.text-primary
+          .row
+            .col-xs-12
+              .progress.progress-striped.active
+                .progress-bar
+                  .text-primary
+                    0%
+    ```
+    
 ### Ajax usage
 
 Example of ajax call (this is a .html.haml remote: true response):
 
-    var interval;
-    $('.hermes-import .well').show();
-    interval = setInterval(function(){
-      $.ajax({
-        url: '/progress-job/' + #{@job.id},
-        success: function(job){
-          var stage, progress;
+    ``` javascript
+      var interval;
+      $('.hermes-import .well').show();
+      interval = setInterval(function(){
+        $.ajax({
+          url: '/progress-job/' + #{@job.id},
+          success: function(job){
+            var stage, progress;
 
-          // If there are errors
-          if (job.last_error != null) {
-            $('.progress-status').addClass('text-danger').text(job.progress_stage);
-            $('.progress-bar').addClass('progress-bar-danger');
+            // If there are errors
+            if (job.last_error != null) {
+              $('.progress-status').addClass('text-danger').text(job.progress_stage);
+              $('.progress-bar').addClass('progress-bar-danger');
+              $('.progress').removeClass('active');
+              clearInterval(interval);
+            }
+
+            // Upload stage
+            if (job.progress_stage != null){
+              stage = job.progress_stage;
+              progress = job.progress_current / job.progress_max * 100;
+            } else {
+              progress = 0;
+              stage = 'Uploading file';
+            }
+
+            // In job stage
+            if (progress !== 0){
+              $('.progress-bar').css('width', progress + '%').text(progress + '%');
+            }
+
+            $('.progress-status').text(stage);
+          },
+          error: function(){
+            // Job is no loger in database which means it finished successfuly
             $('.progress').removeClass('active');
+            $('.progress-bar').css('width', '100%').text('100%');
+            $('.progress-status').text('Successfully imported!');
             clearInterval(interval);
           }
-
-          // Upload stage
-          if (job.progress_stage != null){
-            stage = job.progress_stage;
-            progress = job.progress_current / job.progress_max * 100;
-          } else {
-            progress = 0;
-            stage = 'Uploading file';
-          }
-
-          // In job stage
-          if (progress !== 0){
-            $('.progress-bar').css('width', progress + '%').text(progress + '%');
-          }
-
-          $('.progress-status').text(stage);
-        },
-        error: function(){
-          // Job is no loger in database which means it finished successfuly
-          $('.progress').removeClass('active');
-          $('.progress-bar').css('width', '100%').text('100%');
-          $('.progress-status').text('Successfully imported!');
-          clearInterval(interval);
-        }
-      })
-    },100);
+        })
+      },100);
+    ```
 
 ## Contributing
 
