@@ -4,6 +4,10 @@ This gem add a couple of colums to delayed job table, and gives u a basic class 
 
 ![progress_job](https://s3-eu-west-1.amazonaws.com/uploads-eu.hipchat.com/36110/270039/V6ljuGiWx70t2AF/progress%20%281%29.gif)
 
+## Requirements
+
+Ruby 2.0.0 (as the methods are using keyword arguments.)
+
 ## Installation
 
 You need to have https://github.com/collectiveidea/delayed_job in you gem file
