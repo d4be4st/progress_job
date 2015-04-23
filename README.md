@@ -101,7 +101,7 @@ There is also a controller which returns the delayed job with calculated percent
   end
 ```
 
-### HAML 
+### HAML
 
 ``` ruby
   = simple_form_for :import, url: [:import], remote: true do |f|
@@ -133,22 +133,32 @@ Example of ajax call (this is a .html.haml remote: true response):
   $('.hermes-import .well').show();
   interval = setInterval(function(){
     $.ajax({
-      url: '/progress-job/' + #{@job.id},
-      success: function(job){
+      url: '/progress-job/' + #{@job.id}
+    })
+    .done(function(data){
+
+      // Job is no longer in database which means it finished successfully
+      if(data.job_not_found){
+        $('.progress').removeClass('active');
+        $('.progress-bar').css('width', '100%').text('100%');
+        $('.progress-status').text('Successfully imported!');
+        clearInterval(interval);
+      }
+      else {
         var stage, progress;
 
         // If there are errors
-        if (job.last_error != null) {
-          $('.progress-status').addClass('text-danger').text(job.progress_stage);
+        if (data.last_error != null) {
+          $('.progress-status').addClass('text-danger').text(data.progress_stage);
           $('.progress-bar').addClass('progress-bar-danger');
           $('.progress').removeClass('active');
           clearInterval(interval);
         }
 
         // Upload stage
-        if (job.progress_stage != null){
-          stage = job.progress_stage;
-          progress = job.progress_current / job.progress_max * 100;
+        if (data.progress_stage != null){
+          stage = data.progress_stage;
+          progress = data.progress_current / data.progress_max * 100;
         } else {
           progress = 0;
           stage = 'Uploading file';
@@ -158,15 +168,7 @@ Example of ajax call (this is a .html.haml remote: true response):
         if (progress !== 0){
           $('.progress-bar').css('width', progress + '%').text(progress + '%');
         }
-
         $('.progress-status').text(stage);
-      },
-      error: function(){
-        // Job is no loger in database which means it finished successfuly
-        $('.progress').removeClass('active');
-        $('.progress-bar').css('width', '100%').text('100%');
-        $('.progress-status').text('Successfully imported!');
-        clearInterval(interval);
       }
     })
   },100);
