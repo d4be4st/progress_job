@@ -1,6 +1,6 @@
 # ProgressJob
 
-This gem add a couple of colums to delayed job table, and gives u a basic class for working with progress
+This gem adds a couple of columns to delayed job table, and gives you a basic class for working with progress
 
 ![progress_job](https://s3-eu-west-1.amazonaws.com/uploads-eu.hipchat.com/36110/270039/V6ljuGiWx70t2AF/progress%20%281%29.gif)
 
@@ -162,7 +162,7 @@ Example of ajax call (this is a .html.haml remote: true response):
         $('.progress-status').text(stage);
       },
       error: function(){
-        // Job is no loger in database which means it finished successfuly
+        // Job is no longer in database which means it finished successfully
         $('.progress').removeClass('active');
         $('.progress-bar').css('width', '100%').text('100%');
         $('.progress-status').text('Successfully imported!');
