@@ -1,4 +1,4 @@
-class AddProgressToDelayedJobs < ActiveRecord::Migration
+class AddProgressToDelayedJobs < ActiveRecord::Migration<%= migration_version %>
   def change
     change_table :delayed_jobs do |t|
       t.string :progress_stage, required: true

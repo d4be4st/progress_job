@@ -16,6 +16,12 @@ module ProgressJob
       def self.next_migration_number(path)
         @migration_number = Time.now.utc.strftime("%Y%m%d%H%M%S").to_i.to_s
       end
+
+      def migration_version
+        if rails5?
+          "[#{Rails::VERSION::MAJOR}.#{Rails::VERSION::MINOR}]"
+        end
+      end
     end
   end
 end
