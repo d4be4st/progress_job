@@ -10,6 +10,7 @@ module ProgressJob
 
       def install
         migration_template "migration.rb", "db/migrate/add_progress_to_delayed_jobs.rb"
+        route "get 'progress-job/:job_id' => 'progress_job/progress#show'"
       end
 
       def self.next_migration_number(path)
